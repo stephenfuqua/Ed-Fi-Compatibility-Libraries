@@ -72,3 +72,4 @@ logistics/Services/
 *.generated - Copy.resx
 
 *.log
+*.trx

@@ -1,0 +1,72 @@
+# SPDX-License-Identifier: Apache-2.0
+# Licensed to the Ed-Fi Alliance under one or more agreements.
+# The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
+# See the LICENSE and NOTICES files in the project root for more information.
+
+name: On Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+      - "*-hotfix"
+    paths:
+      - "**/*.cs"
+      - "**/*.csproj"
+      - ".github/**/*.yml"
+  workflow_dispatch:
+
+jobs:
+  scan-actions-bidi:
+    name: Scan Actions, scan all files for BIDI Trojan Attacks
+    uses: ed-fi-alliance-oss/ed-fi-actions/.github/workflows/repository-scanner.yml@main
+    with:
+      config-file-path: ./.github/workflows/bidi-config.json
+
+  run-cs-tests:
+    name: Run C# Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout the Repo
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Build
+        run: dotnet build .\NuGet\EdFi.Security.DataAccess\53\EdFi.Security.DataAccess.sln
+
+      - name: Run Unit Tests
+        if: success()
+        run: |
+          dotnet test \
+            .\NuGet\EdFi.Security.DataAccess\53\EdFi.SecurityCompatiblity53.DataAccess.UnitTests \
+            --logger "trx;LogFileName=EdFi.SecurityCompatiblity53.DataAccess.UnitTests.trx" \
+            --nologo
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
+        with:
+          name: csharp-tests
+          path: "**/*.trx"
+          retention-days: 5
+
+      - name: Dependency Review ("Dependabot on PR")
+        if: ${{ !github.event.repository.fork }}
+        uses: actions/dependency-review-action@9129d7d40b8c12c1ed0f60400d00c92d437adcce # v4.1.3
+
+      - name: Initialize CodeQL
+        if: success()
+        uses: github/codeql-action/init@cf7e9f23492505046de9a37830c3711dd0f25bb3 # codeql-bundle-v2.16.2
+        with:
+          languages: csharp
+
+      # Must build the software after initialization of CodeQL; something about
+      # CodeQL initialization causes the resulting build to fail unit tests.
+      # Therefore rebuilding here, even though also built above.
+      - name: Build
+        run: dotnet build .\NuGet\EdFi.Security.DataAccess\53\EdFi.Security.DataAccess.sln
+
+      - name: Perform CodeQL Analysis
+        if: success()
+        uses: github/codeql-action/analyze@cf7e9f23492505046de9a37830c3711dd0f25bb3 # codeql-bundle-v2.16.2
