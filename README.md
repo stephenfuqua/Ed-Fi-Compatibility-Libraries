@@ -7,9 +7,12 @@ Shared libraries for backward compatibility support
 * Although this is called "53" it applies to ODS/API 5.4 as well.
 * Running the integration tests requires presence of SQL Server and PostgreSQL
   instances with the EdFi_Security database from 5.3 or 5.4.
-* Release process
-  * Manually run the release Action
-  * Then create a Release and Tag
+* Release process does not match our ideal scenario in other repositories.
+  * Create a Pre-release
+  * Automatically builds and publishes a NuGet package with the version number
+    from `Directory.Build.props`
+  * If everything looks good, then change to a release, and
+  * In Azure Artifacts, promote the new NuGet package to the Release view.
 
 ## Legal Information
 
