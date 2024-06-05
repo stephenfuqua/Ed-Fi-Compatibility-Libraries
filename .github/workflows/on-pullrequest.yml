@@ -65,7 +65,9 @@ jobs:
       # CodeQL initialization causes the resulting build to fail unit tests.
       # Therefore rebuilding here, even though also built above.
       - name: Build
-        run: dotnet build .\NuGet\EdFi.Security.DataAccess\53\EdFi.Security.DataAccess.sln
+        run: |
+          dotnet clean .\NuGet\EdFi.Security.DataAccess\53\EdFi.Security.DataAccess.sln
+          dotnet build .\NuGet\EdFi.Security.DataAccess\53\EdFi.Security.DataAccess.sln
 
       - name: Perform CodeQL Analysis
         if: success()
