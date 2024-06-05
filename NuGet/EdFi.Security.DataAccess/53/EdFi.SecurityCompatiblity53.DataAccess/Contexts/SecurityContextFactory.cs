@@ -24,8 +24,7 @@ namespace EdFi.SecurityCompatiblity53.DataAccess.Contexts
 
         public SecurityContextFactory(ISecurityDatabaseConnectionStringProvider connectionStringProvider, DatabaseEngine databaseEngine)
         {
-            _connectionStringProvider = connectionStringProvider;
-            _databaseEngine = databaseEngine;
+            throw new NotImplementedException(); // temporary just for testing purposes
         }
 
         public Type GetSecurityContextType()
