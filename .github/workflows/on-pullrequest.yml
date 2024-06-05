@@ -39,9 +39,9 @@ jobs:
       - name: Run Unit Tests
         if: success()
         run: |
-          dotnet test \
-            .\NuGet\EdFi.Security.DataAccess\53\EdFi.SecurityCompatiblity53.DataAccess.UnitTests \
-            --logger "trx;LogFileName=EdFi.SecurityCompatiblity53.DataAccess.UnitTests.trx" \
+          dotnet test `
+            .\NuGet\EdFi.Security.DataAccess\53\EdFi.SecurityCompatiblity53.DataAccess.UnitTests `
+            --logger "trx;LogFileName=EdFi.SecurityCompatiblity53.DataAccess.UnitTests.trx" `
             --nologo
 
       - name: Upload Test Results
